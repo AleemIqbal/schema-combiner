@@ -13,17 +13,16 @@
       resize: none;
     }
   </style>
-  <script>
-    function copyToClipboard(text) {
-      const el = document.createElement('textarea');
-      el.value = text;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      alert('Copied to clipboard!');
-    }
-  </script>
+<script>
+function copyToClipboard(text) {
+  const el = document.createElement('textarea');
+  el.innerHTML = text; // Use innerHTML instead of value to decode HTML entities
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+}
+</script>
 </head>
 <body>
   <div class="container">
@@ -41,6 +40,10 @@
     </form>
     
     <?php
+	 function jsonToHtmlAttribute($json) {
+  $jsonString = json_encode($json, JSON_HEX_APOS | JSON_HEX_QUOT);
+  return substr($jsonString, 1, -1); // Remove the extra double quotes from the JSON string
+}
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $schema1 = json_decode($_POST['schema1'], true);
       $schema2 = json_decode($_POST['schema2'], true);
@@ -53,7 +56,7 @@
         $combinedJson = json_encode($combinedSchema, JSON_PRETTY_PRINT);
         echo '<div class="mt-5">';
         echo '<h2>Combined JSON-LD Schema:</h2>';
-        echo '<button class="btn btn-secondary mb-2" onclick="copyToClipboard(\'' . htmlspecialchars(addslashes($combinedJson)) . '\')">Copy to Clipboard</button>';
+        echo '<button class="btn btn-secondary mb-2" onclick="copyToClipboard(\'' . jsonToHtmlAttribute($combinedJson) . '\')">Copy to Clipboard</button>';
         echo '<pre class="border rounded p-3 bg-light">' . htmlspecialchars($combinedJson) . '</pre>';
         echo '</div>';
       } else {
